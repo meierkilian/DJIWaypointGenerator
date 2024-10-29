@@ -9,4 +9,4 @@ At each waypoint, a picture is taken, looking at the POI.
 See DJI documentation [here](https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/dji-wpml/common-element.html).
 
 ## Sample mission screenshot
-[sampleMissionScreenshot](ressources/exampleMissionScreenshot.png)
+![sampleMissionScreenshot](ressources/exampleMissionScreenshot.png)
