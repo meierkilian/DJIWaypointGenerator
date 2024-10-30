@@ -16,6 +16,7 @@ class MissionGenerator:
         self.POI_lat = lat
         self.POI_lon = lon
         self.POI_altEGM96 = altEGM96
+        self.POI_altRel = 0
 
     def getPOI(self):
         """Point of Interest getter.
@@ -23,11 +24,11 @@ class MissionGenerator:
         Returns:
             dict: dictionnary containing POI, field are "lat", "lon", "altAbs"
         """        
-        return {"lat": self.POI_lat, "lon": self.POI_lon, "altAbs": self.POI_altEGM96}
+        return {"lat": self.POI_lat, "lon": self.POI_lon, "altRel": self.POI_altRel}
 
     def range2focalLength(slef, range):
         # some mapping between the two, maybe include the size of observed object
-        return 30
+        return 200
 
     def generateTransect(self, setHeading, setAltRel, setDist):
         """Generate waypoints for a set of transects mission.
@@ -51,13 +52,13 @@ class MissionGenerator:
             for alt in setAltRel:
                 for dist in setDist:
                     # Compute absolute position from relative offsets
-                    lat, lon, altAbs = pymap3d.enu2geodetic(dist * sind(heading), dist * cosd(heading), alt, self.POI_lat, self.POI_lon, self.POI_altEGM96)
+                    lat, lon, altRel = pymap3d.enu2geodetic(dist * sind(heading), dist * cosd(heading), alt, self.POI_lat, self.POI_lon, self.POI_altRel)
 
                     # Compute set of gimbal positions
-                    az, el, srange = pymap3d.geodetic2aer(self.POI_lat, self.POI_lon, self.POI_altEGM96, lat, lon, altAbs)
+                    az, el, srange = pymap3d.geodetic2aer(self.POI_lat, self.POI_lon, self.POI_altRel, lat, lon, altRel)
                     # Create waypoint
                     wp.append(
-                        {"lat": lat, "lon": lon, "altAbs": altAbs, "actions": [
+                        {"lat": lat, "lon": lon, "altRel": altRel, "actions": [
                             {"pitch": el, "yaw": az, "focalLength": self.range2focalLength(srange)}
                     ]}
                     )
@@ -66,5 +67,5 @@ class MissionGenerator:
 if __name__ == "__main__":
     gen = MissionGenerator()
     gen.setPOI(51.42354723804961, -2.670840695536882, 48)
-    wp = gen.generateTransect(90, [70, 100, 120], [100, 150, 200, 250])
+    wp = gen.generateTransect([90], [70, 100, 120], [100, 150, 200, 250])
     print(wp)

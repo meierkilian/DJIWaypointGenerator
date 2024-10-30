@@ -78,7 +78,8 @@ class WpmlTemplate:
             </coordinates>
         </Point>
         <wpml:index>{wpID}</wpml:index>
-        <wpml:height>{wp['altAbs']}</wpml:height>
+        <wpml:ellipsoidHeight>{wp['altRel']}</wpml:ellipsoidHeight>
+        <wpml:height>{wp['altRel']}</wpml:height>
         <wpml:useGlobalHeight>0</wpml:useGlobalHeight>
         <wpml:useGlobalSpeed>1</wpml:useGlobalSpeed>
         <wpml:useGlobalHeadingParam>1</wpml:useGlobalHeadingParam>
@@ -101,12 +102,12 @@ class WpmlTemplate:
         return placeMarks
 
 
-    def getWaypointMission(self, wpList, POI, takeOffSecurityHeight = 20, globalTransitionalSpeed = 5, autoFlightSpeed = 5, globalHeightOffset = 50):
+    def getWaypointMission(self, wpList, POI, takeOffSecurityHeight = 20, globalTransitionalSpeed = 5, autoFlightSpeed = 5, globalHeight = 50):
         """Creates main body of the mission file. See details here: https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/dji-wpml/overview.html
 
         Args:
             wpList (): List of waypoints as generated be the MissionGenerator class
-            POI (): Point of Interest position the dictionnary should contain the following fields: "lat", lon", "altAbs". Latitude and Longitude in WGS64 and altitude in EGM96
+            POI (): Point of Interest position the dictionnary should contain the following fields: "lat", lon", "altRel". Latitude and Longitude in WGS64 and altitude in EGM96
             takeOffSecurityHeight (int, optional): See DJI documentation. Defaults to 20.
             globalTransitionalSpeed (int, optional): See DJI documentation. Defaults to 5.
             autoFlightSpeed (int, optional): See DJI documentation. Defaults to 5.
@@ -149,17 +150,17 @@ class WpmlTemplate:
     <wpml:templateId>0</wpml:templateId>
     <wpml:waylineCoordinateSysParam>
         <wpml:coordinateMode>WGS84</wpml:coordinateMode>
-        <wpml:heightMode>EGM96</wpml:heightMode>
+        <wpml:heightMode>relativeToStartPoint</wpml:heightMode>
         <wpml:positioningType>GPS</wpml:positioningType>
     </wpml:waylineCoordinateSysParam>
     <wpml:autoFlightSpeed>{autoFlightSpeed}</wpml:autoFlightSpeed>
-    <wpml:globalHeight>{POI["altAbs"] + globalHeightOffset}</wpml:globalHeight>
+    <wpml:globalHeight>{globalHeight}</wpml:globalHeight>
     <wpml:caliFlightEnable>0</wpml:caliFlightEnable>
     <wpml:gimbalPitchMode>usePointSetting</wpml:gimbalPitchMode>
     <wpml:globalWaypointHeadingParam>
         <wpml:waypointHeadingMode>towardPOI</wpml:waypointHeadingMode>
         <wpml:waypointHeadingAngle>0</wpml:waypointHeadingAngle>
-        <wpml:waypointPoiPoint>{POI["lat"]},{POI["lon"]},{POI["altAbs"]}</wpml:waypointPoiPoint>
+        <wpml:waypointPoiPoint>{POI["lat"]},{POI["lon"]},{POI["altRel"]}</wpml:waypointPoiPoint>
         <wpml:waypointHeadingPoiIndex>0</wpml:waypointHeadingPoiIndex>
     </wpml:globalWaypointHeadingParam>
     <wpml:globalWaypointTurnMode>toPointAndStopWithDiscontinuityCurvature</wpml:globalWaypointTurnMode>
@@ -195,16 +196,16 @@ class WpmlTemplate:
 if __name__ == '__main__':
     templates = WpmlTemplate()
     wp = [ 
-        {"lat": 51.4233553605864, "lon": -2.671656658289393, "altAbs": 100, "actions": [
+        {"lat": 51.4233553605864, "lon": -2.671656658289393, "altRel": 50, "actions": [
             {"pitch": 4, "yaw": 5, "focalLength": 6},
             {"pitch": 7, "yaw": 8, "focalLength": 9},
         ]},
-        {"lat": 51.4235404797627, "lon": -2.6708493698988263, "altAbs": 100, "actions": [
+        {"lat": 51.4235404797627, "lon": -2.6708493698988263, "altRel": 50, "actions": [
             {"pitch": 4, "yaw": 5, "focalLength": 6},
             {"pitch": 7, "yaw": 8, "focalLength": 9},
         ]},
     ]
-    str = templates.getWaypointMission(wp, {"lat": 51.42307121304408, "lon": -2.6710493996958298, "altAbs": 47})
+    str = templates.getWaypointMission(wp, {"lat": 51.42307121304408, "lon": -2.6710493996958298, "altRel": 47})
     templates.generateMissionArchive("newCoolMission1", str)
     
     
