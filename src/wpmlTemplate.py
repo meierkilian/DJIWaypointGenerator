@@ -54,6 +54,50 @@ class WpmlTemplate:
             </wpml:action>
             """
         return action
+
+    def getActionTakePhoto(self, wpID, imgID):
+        """Create description of action for taking a photo.
+
+        Args:
+            wpID (int): waypoint index (used to label pictures)
+            imgID (int): action (image) ID, each action at a waypoint must have a unique ID
+
+        Returns:
+            str: action description
+        """        
+        action = f"""<wpml:action>
+                <wpml:actionId>{imgID}</wpml:actionId>
+                <wpml:actionActuatorFunc>takePhoto</wpml:actionActuatorFunc>
+                <wpml:actionActuatorFuncParam>
+                    <wpml:fileSuffix>{wpID}</wpml:fileSuffix>
+                    <wpml:payloadPositionIndex>0</wpml:payloadPositionIndex>
+                    <wpml:useGlobalPayloadLensIndex>1</wpml:useGlobalPayloadLensIndex>
+                </wpml:actionActuatorFuncParam>
+            </wpml:action>
+            """
+        return action
+    
+    def getActionWait(self, duration, wpID, actionID):
+        """Create description of action for waiting.
+
+        Args:
+            duration (int): duration of the wait in seconds
+            wpID (int): waypoint index (used to label pictures)
+            actionID (int): action (image) ID, each action at a waypoint must have a unique ID
+
+        Returns:
+            str: action description
+        """        
+        actionUUID = uuid.uuid4()
+        action = f"""<wpml:action>
+                <wpml:actionId>{actionID}</wpml:actionId>
+                <wpml:actionActuatorFunc>hover</wpml:actionActuatorFunc>
+                <wpml:actionActuatorFuncParam>
+                    <wpml:hoverTime>{duration}</wpml:hoverTime>
+                </wpml:actionActuatorFuncParam>
+            </wpml:action>
+            """
+        return action
         
     def getPlaceMarks(self, wp, wpID):
         """Creates waypoint (PlaceMark) mission descritption.
@@ -68,8 +112,15 @@ class WpmlTemplate:
         # Generated all the actions 
         actions = ""
         for actionID, a in enumerate(wp["actions"]):
-            actions += self.getActionOrientedShoot(a["pitch"], a["yaw"], a["focalLength"], wpID, actionID)
-        
+            if a["type"] == "OrientedShoot":
+                actions += self.getActionOrientedShoot(a["pitch"], a["yaw"], a["focalLength"], wpID, actionID)
+            elif a["type"] == "TakePhoto":
+                actions += self.getActionTakePhoto(wpID, actionID)
+            elif a["type"] == "Wait":
+                actions += self.getActionWait(a["duration"], wpID, actionID)
+            else:
+                raise ValueError(f"Action type {a['type']} not recognized")
+    
         # Create waypoint description
         placeMarks = f"""<Placemark>
         <Point>
@@ -195,14 +246,24 @@ class WpmlTemplate:
 
 if __name__ == '__main__':
     templates = WpmlTemplate()
+    # wp = [ 
+    #     {"lat": 51.4233553605864, "lon": -2.671656658289393, "altRel": 50, "actions": [
+    #         {"type": "OrientedShoot", "pitch": 4, "yaw": 5, "focalLength": 6},
+    #         {"type": "OrientedShoot", "pitch": 7, "yaw": 8, "focalLength": 9},
+    #     ]},
+    #     {"lat": 51.4235404797627, "lon": -2.6708493698988263, "altRel": 50, "actions": [
+    #         {"type": "OrientedShoot", "pitch": 4, "yaw": 5, "focalLength": 6},
+    #         {"type": "OrientedShoot", "pitch": 7, "yaw": 8, "focalLength": 9},
+    #     ]},
+    # ]
     wp = [ 
         {"lat": 51.4233553605864, "lon": -2.671656658289393, "altRel": 50, "actions": [
-            {"pitch": 4, "yaw": 5, "focalLength": 6},
-            {"pitch": 7, "yaw": 8, "focalLength": 9},
+            {"type": "Wait", "duration": 10},
+            {"type": "TakePhoto"},
         ]},
         {"lat": 51.4235404797627, "lon": -2.6708493698988263, "altRel": 50, "actions": [
-            {"pitch": 4, "yaw": 5, "focalLength": 6},
-            {"pitch": 7, "yaw": 8, "focalLength": 9},
+            {"type": "Wait", "duration": 10},
+            {"type": "TakePhoto"},
         ]},
     ]
     str = templates.getWaypointMission(wp, {"lat": 51.42307121304408, "lon": -2.6710493996958298, "altRel": 47})

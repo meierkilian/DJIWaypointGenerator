@@ -18,6 +18,14 @@ class MissionGenerator:
         self.POI_altEGM96 = altEGM96
         self.POI_altRel = 0
 
+    def setWaitDuration(self, duration):
+        """Set duration of wait action.
+
+        Args:
+            duration (int): duration in seconds
+        """        
+        self.waitDuration = duration
+
     def getPOI(self):
         """Point of Interest getter.
 
@@ -59,7 +67,9 @@ class MissionGenerator:
                     # Create waypoint
                     wp.append(
                         {"lat": lat, "lon": lon, "altRel": altRel, "actions": [
-                            {"pitch": el, "yaw": az, "focalLength": self.range2focalLength(srange)}
+                            # {"pitch": el, "yaw": az, "focalLength": self.range2focalLength(srange)}
+                            {"type": "Wait", "duration": self.waitDuration},
+                            {"type": "TakePhoto"},
                     ]}
                     )
         return wp
