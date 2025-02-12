@@ -153,7 +153,7 @@ class WpmlTemplate:
         return placeMarks
 
 
-    def getWaypointMission(self, wpList, POI, takeOffSecurityHeight = 20, globalTransitionalSpeed = 5, autoFlightSpeed = 5, globalHeight = 50):
+    def getWaypointMission(self, wpList, POI, takeOffSecurityHeight = 20, globalTransitionalSpeed = 7, autoFlightSpeed = 7, globalHeight = 50):
         """Creates main body of the mission file. See details here: https://developer.dji.com/doc/cloud-api-tutorial/en/api-reference/dji-wpml/overview.html
 
         Args:
@@ -207,9 +207,9 @@ class WpmlTemplate:
     <wpml:autoFlightSpeed>{autoFlightSpeed}</wpml:autoFlightSpeed>
     <wpml:globalHeight>{globalHeight}</wpml:globalHeight>
     <wpml:caliFlightEnable>0</wpml:caliFlightEnable>
-    <wpml:gimbalPitchMode>usePointSetting</wpml:gimbalPitchMode>
+    <wpml:gimbalPitchMode>manual</wpml:gimbalPitchMode>
     <wpml:globalWaypointHeadingParam>
-        <wpml:waypointHeadingMode>towardPOI</wpml:waypointHeadingMode>
+        <wpml:waypointHeadingMode>manually</wpml:waypointHeadingMode>
         <wpml:waypointHeadingAngle>0</wpml:waypointHeadingAngle>
         <wpml:waypointPoiPoint>{POI["lat"]},{POI["lon"]},{POI["altRel"]}</wpml:waypointPoiPoint>
         <wpml:waypointHeadingPoiIndex>0</wpml:waypointHeadingPoiIndex>

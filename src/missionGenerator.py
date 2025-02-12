@@ -58,6 +58,7 @@ class MissionGenerator:
         # For all wapoints
         for heading in setHeading:
             for alt in setAltRel:
+                setDist = setDist[::-1]
                 for dist in setDist:
                     # Compute absolute position from relative offsets
                     lat, lon, altRel = pymap3d.enu2geodetic(dist * sind(heading), dist * cosd(heading), alt, self.POI_lat, self.POI_lon, self.POI_altRel)
